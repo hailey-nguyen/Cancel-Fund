@@ -71,8 +71,11 @@ df = pd.DataFrame(portfolio_data, columns=[
 # ================================================
 # 5. Split Data: Longs & Shorts
 # ================================================
-long_stocks = df[df['Symbol'].isin(stock_symbols[:7])].nlargest(HOLDINGS_NUM, 'Total Score')
-short_stocks = df[df['Symbol'].isin(['TSLA', 'DAL', 'AAL'])]
+short_symbols = ['TSLA', 'DAL', 'AAL']
+
+long_candidates = df[~df['Symbol'].isin(short_symbols)]  # Remove short positions from long selection
+long_stocks = long_candidates.nlargest(HOLDINGS_NUM, 'Total Score')
+short_stocks = df[df['Symbol'].isin(short_symbols)]
 
 total_scores = long_stocks['Total Score'].sum() + short_stocks['Total Score'].sum()
 long_stocks['Weight'] = (long_stocks['Total Score'] / total_scores) * TOTAL_PORTFOLIO_ALLOCATION
